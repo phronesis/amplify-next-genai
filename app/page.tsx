@@ -7,8 +7,9 @@ import "./../app/app.css";
 import { Amplify } from "aws-amplify";
 import outputs from "@/amplify_outputs.json";
 import "@aws-amplify/ui-react/styles.css";
-import { Card, Heading, Flex, Label, Input, SelectField, TextAreaField } from "@aws-amplify/ui-react";
-import { a } from "@aws-amplify/backend";
+import { Card, Heading, Flex, Label, Input, SelectField, TextAreaField, Loader } from "@aws-amplify/ui-react";
+
+
 
 Amplify.configure(outputs);
 
@@ -30,6 +31,7 @@ export default function App() {
   const [questions, setQuestions] = useState<Array<Question>>([]);
   const [answers, setAnswers] = useState<Answers>({});
   const [generatedPlan, setGeneratedPlan] = useState<string>("")
+  const [loading, setLoading] = useState<boolean>(false)
 
   const handleInputChange = (questionId: number, value: string) => {
     setAnswers((prevAnswers) => ({
@@ -50,6 +52,7 @@ export default function App() {
 
   function createLearningPlan(event:any) {
     //let plan = event.target.value
+   setLoading(true) 
     client.models.LearningPlan.create({
       role: 'software',
       level: 'junior',
@@ -57,11 +60,11 @@ export default function App() {
       status: 'initial',
     });
 
-    console.log(event.target);
+    setLoading(false) 
   }
 
   async function fetchQuestions(e: any) {
-    console.log(e.target.value);
+    setLoading(true)
 
     //connect with llm and generate questions for role and level
     const response = await client.queries.askBedrock(
@@ -81,10 +84,11 @@ export default function App() {
       const content = JSON.parse(res.content[0].text);
       const generatedQuestions = content["questions"] ?? [];
       setQuestions(generatedQuestions);
+      setLoading(false)
   }
 
-  async function submitForm(event: any){
-   
+  async function generatePlan(event: any){
+   setLoading(true);
     let answersString = "Given the following questions and answers, generate a learning plan for a senior software engineer:";
     for (const [questionId, answer] of Object.entries(answers)) {
       let question = questions.find((q) => q.id === parseInt(questionId));
@@ -97,27 +101,31 @@ export default function App() {
       const res = JSON.parse(response.data?.body!);
       const content = res.content[0].text; 
       setGeneratedPlan(content)
+      setLoading(false);
   }
 
   return (
     <main>
       <div>
      <Card>
-      <Heading level={4}></Heading>
+      <Heading level={3}>Generate Learning Plans</Heading>
+      <Heading level={5}>Please fill out the following form to generate a learning plan.</Heading>
       <Flex direction="column" gap="small">
-       
+       {/* @TODO pass form fields to prompt to fetch questions */}
         <SelectField
         label="Role"
-        options={['Cloud Architect','Software Engineer', 'Product Designer']}
+        options={['','Cloud Architect','Software Engineer', 'Product Designer']}
+        placeholder="Select a role"
         ></SelectField>
         
         <SelectField
         label="Level"
-        options={['Junior','Mid', 'Senior']}
+        options={['', 'Junior','Mid', 'Senior']}
+        placeholder="Select a level"
         onChange={fetchQuestions}
         ></SelectField>
        
-
+      <Loader display={loading?"block":"none"} variation="linear"  />
       {questions.map((question) => (
         <div key={question.id} >
           <Label>{question.text}</Label>
@@ -125,17 +133,22 @@ export default function App() {
         </div>
       ))}
 </Flex>
-<Flex direction="column">
-      <button onClick={submitForm}>Submit</button>
+<Flex direction="column" margin="large">
+      <button onClick={generatePlan}>Generate Plan</button>
       </Flex>
+<Loader display={loading?"block":"none"} variation="linear"  />
 
-<Flex direction="column" hidden={!generatedPlan} gap="medium">
-  <TextAreaField label="Learning Plan" defaultValue={generatedPlan} row="10"></TextAreaField>
-<button onClick={createLearningPlan}>Save Plan</button>
-</Flex>     
+<div hidden={!generatedPlan}>
+  <Heading level={5}>Generated Plan</Heading>
+  <Flex direction="column"  gap="medium">
+    <TextAreaField label="" defaultValue={generatedPlan} row="10"></TextAreaField>
+  <button onClick={createLearningPlan}>Save Plan</button>
+
+</Flex>  
+</div>   
      </Card>
 
-      </div>
+     
       <h1>My LearningPlans</h1>
 
       <ul>
@@ -143,7 +156,7 @@ export default function App() {
           <li key={learningPlan.id}>{learningPlan.role}</li>
         ))}
       </ul>
-
+      </div>
     </main>
   );
 }
