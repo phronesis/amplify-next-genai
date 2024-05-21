@@ -62,15 +62,13 @@ export default function App() {
   const createLearningPlan = async () => {
     //let plan = event.target.value
    setLoading(true) 
-     const createdPlan =  await client.models.LearningPlan.create({
+     const {errors, data: createdPlan }=  await client.models.LearningPlan.create({
       role: role,
       level: level,
       plan: plan,
       status: 'initial',
-    },
-    {
-      authMode: 'userPool'
     });
+    // console.log(errors)
 
     setLoading(false) 
     return createdPlan
@@ -92,7 +90,8 @@ export default function App() {
         {
           "id": 2,
           "text": "How comfortable are you with presenting to an audience?"
-        }]}` });
+        }]}` },
+        );
 
       const res = JSON.parse(response.data?.body!);
      
