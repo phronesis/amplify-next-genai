@@ -1,4 +1,5 @@
 import { type ClientSchema, a, defineData } from "@aws-amplify/backend";
+//import { generateQuestions } from "../functions/generateQuestions/resource";
 
 /*== STEP 1 ===============================================================
 The section below creates a Todo database table with a "content" field. Try
@@ -6,20 +7,56 @@ adding a new "isDone" field as a boolean. The authorization rule below
 specifies that any user authenticated via an API key can "create", "read",
 "update", and "delete" any "Todo" records.
 =========================================================================*/
+// const schema = a.schema({
+//   LearningPlan: a
+//     .model({
+//       role: a.string(),
+//       plan: a.string().required()
+//     })
+//     .authorization((allow) => [allow.owner()]),
+// });
+
+//generate a learning plan schema and model with owner authorization
 const schema = a.schema({
-  Todo: a
-    .model({
-      content: a.string(),
-    })
-    .authorization((allow) => [allow.publicApiKey()]),
-});
+    LearningPlan: a
+      .model({
+        role: a.string(),
+        level: a.string(),
+        plan: a.string().required(),
+        status: a.string(),
+      }).authorization(allow => [allow.publicApiKey()]),
+
+      BedrockResponse: a.customType({
+        body: a.string(),
+        error: a.string(),
+      }),
+    
+      askBedrock: a
+        .query()
+        .arguments({ prompt: a.string() })
+        .returns(a.ref("BedrockResponse"))
+        .authorization(allow => allow.publicApiKey())
+        //.authorization(allow => allow.authenticated())
+        .handler(
+          a.handler.custom({ entry: "./bedrock.js", dataSource: "bedrockDS" })
+        ),
+    });
+
+    // generateQuestions: a.mutation()
+    // .arguments({context: a.string()})
+    // .returns(a.json())
+    // .authorization((allow) => [allow.authenticated()])
+    // .handler(a.handler.function(generateQuestions))
+//});
 
 export type Schema = ClientSchema<typeof schema>;
 
 export const data = defineData({
   schema,
   authorizationModes: {
-    defaultAuthorizationMode: "apiKey",
+ 
+  defaultAuthorizationMode: "apiKey",
+    // API Key is used for a.allow.public() rules
     apiKeyAuthorizationMode: {
       expiresInDays: 30,
     },

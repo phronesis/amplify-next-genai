@@ -1,16 +1,25 @@
-## AWS Amplify Next.js (App Router) Starter Template
+## AWS Amplify Learning Plan Generator
 
-This repository provides a starter template for creating applications using Next.js (App Router) and AWS Amplify, emphasizing easy setup for authentication, API, and database capabilities.
-
-## Overview
-
-This template equips you with a foundational Next.js application integrated with AWS Amplify, streamlined for scalability and performance. It is ideal for developers looking to jumpstart their project with pre-configured AWS services like Cognito, AppSync, and DynamoDB.
+Learning plan generator is a web app that enables users generate learning plans for different roles (e.g Solutions Architect, Product Designer). This is a NextJs application built with AWS Amplify. Amazon Bedrock is be used to generate questions for rating and the learning plan
 
 ## Features
-
-- **Authentication**: Setup with Amazon Cognito for secure user authentication.
+- **Web-based User Interface**: Web interface built with Amplify libraries
 - **API**: Ready-to-use GraphQL endpoint with AWS AppSync.
+- **Integration with Amazon Bedrock**
 - **Database**: Real-time database powered by Amazon DynamoDB.
+- **Authentication**: Setup with Amazon Cognito for secure user authentication.
+
+## Installation
+
+### Clone the Repo
+``` git clone repo_url```
+
+### Install Dependencies
+
+Run `npm install`
+
+### Run Project
+run `npm run dev`
 
 ## Deploying to AWS
 
