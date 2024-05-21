@@ -67,6 +67,9 @@ export default function App() {
       level: level,
       plan: plan,
       status: 'initial',
+    },
+    {
+      authMode: 'userPool'
     });
 
     setLoading(false) 
