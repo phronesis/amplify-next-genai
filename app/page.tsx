@@ -157,18 +157,19 @@ export default function App() {
 <div hidden={!generatedPlan}>
   <Heading level={5}>Generated Plan</Heading>
   <Flex direction="column"  gap="medium">
-    <TextAreaField label="" defaultValue={generatedPlan} row="10" onChange={(event)=> handleModifiedPlan(event.target.value)}></TextAreaField>
+    <TextAreaField label="" defaultValue={generatedPlan} rows={30} onChange={(event)=> handleModifiedPlan(event.target.value)}></TextAreaField>
   <button onClick={createLearningPlan}>Save Plan</button>
 </Flex>  
 </div>   
      </Card>
-     
-      <h1>My LearningPlans</h1>
+ <Card>  
+      <h1>My Learning Plans</h1>
       <ul>
         {learningPlans.map((learningPlan) => (
           <li key={learningPlan.id}>{learningPlan.role} - {learningPlan.level}</li>
         ))}
       </ul>
+  </Card>  
       </div>
     </main>
   );
