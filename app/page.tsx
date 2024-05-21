@@ -6,7 +6,9 @@ import type { Schema } from "@/amplify/data/resource";
 import "./../app/app.css";
 import { Amplify } from "aws-amplify";
 import outputs from "@/amplify_outputs.json";
-import "@aws-amplify/ui-react/styles.css";
+
+import { Authenticator } from '@aws-amplify/ui-react'
+import '@aws-amplify/ui-react/styles.css'
 import { Card, Heading, Flex, Label, Input, SelectField, TextAreaField, Loader } from "@aws-amplify/ui-react";
 
 
@@ -65,6 +67,9 @@ export default function App() {
       level: level,
       plan: plan,
       status: 'initial',
+    },
+    {
+      authMode: 'userPool'
     });
 
     setLoading(false) 
@@ -120,6 +125,9 @@ export default function App() {
   }
 
   return (
+       
+  <Authenticator>
+    {({ signOut, user }) => ( 
     <main>
       <div>
      <Card>
@@ -171,6 +179,9 @@ export default function App() {
       </ul>
   </Card>  
       </div>
+      <button onClick={signOut}>Sign out</button>
     </main>
+    )}
+  </Authenticator>
   );
 }

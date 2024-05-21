@@ -24,7 +24,7 @@ const schema = a.schema({
         level: a.string(),
         plan: a.string().required(),
         status: a.string(),
-      }).authorization(allow => [allow.publicApiKey()]),
+      }).authorization(allow => [allow.owner()]),
 
       BedrockResponse: a.customType({
         body: a.string(),
@@ -54,6 +54,8 @@ export type Schema = ClientSchema<typeof schema>;
 export const data = defineData({
   schema,
   authorizationModes: {
+    
+    // defaultAuthorizationMode: 'userPool',
  
   defaultAuthorizationMode: "apiKey",
     // API Key is used for a.allow.public() rules
